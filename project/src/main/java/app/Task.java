@@ -1,9 +1,5 @@
 package app;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import io.github.humbleui.jwm.MouseButton;
 import io.github.humbleui.skija.*;
 import lombok.Getter;
@@ -21,7 +17,6 @@ import static app.Colors.*;
 /**
  * Класс задачи
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, property = "@class")
 public class Task {
     /**
      * Текст задачи
@@ -39,11 +34,16 @@ public class Task {
      */
     @Getter
     private final CoordinateSystem2d ownCS;
-//    /**
-//     * Список точек
-//     */
-//    @Getter
-//    private final ArrayList<Point> points;
+    /**
+     * Список точек
+     */
+    @Getter
+    private final ArrayList<Point> points;
+    /**
+     * Список окружностей
+     */
+    @Getter
+    private final ArrayList<Circle> circles;
     /**
      * Размер точки
      */
@@ -70,34 +70,19 @@ public class Task {
      */
     private static final int DELIMITER_ORDER = 10;
 
-//    /**
-//     * Список точек в пересечении
-//     */
-//    @Getter
-//    @JsonIgnore
-//    private final ArrayList<Point> crossed;
-//    /**
-//     * Список точек в разности
-//     */
-//    @Getter
-//    @JsonIgnore
-//    private final ArrayList<Point> single;
-
     /**
      * Задача
      *
      * @param ownCS  СК задачи
      * @param points массив точек
      */
-    @JsonCreator
     public Task(
-            @JsonProperty("ownCS") CoordinateSystem2d ownCS,
-            @JsonProperty("points") ArrayList<Point> points
+            CoordinateSystem2d ownCS,
+            ArrayList<Point> points
     ) {
-//        this.crossed = new ArrayList<>();
-//        this.single = new ArrayList<>();
         this.ownCS = ownCS;
-//        this.points = points;
+        this.points = points;
+        this.circles = new ArrayList<>();
     }
 
     /**
@@ -205,35 +190,6 @@ public class Task {
 //        PanelLog.info("точка " + newPoint + " добавлена в " + newPoint.getSetName());
 //    }
 
-//    /**
-//     * Добавить случайные точки
-//     *
-//     * @param cnt кол-во случайных точек
-//     */
-//    public void addRandomPoints(int cnt) {
-//        // если создавать точки с полностью случайными координатами,
-//        // то вероятность того, что они совпадут крайне мала
-//        // поэтому нужно создать вспомогательную малую целочисленную ОСК
-//        // для получения случайной точки мы будем запрашивать случайную
-//        // координату этой решётки (их всего 30х30=900).
-//        // после нам останется только перевести координаты на решётке
-//        // в координаты СК задачи
-//        CoordinateSystem2i addGrid = new CoordinateSystem2i(30, 30);
-//
-//        // повторяем заданное количество раз
-//        for (int i = 0; i < cnt; i++) {
-//            // получаем случайные координаты на решётке
-//            Vector2i gridPos = addGrid.getRandomCoords();
-//            // получаем координаты в СК задачи
-//            Vector2d pos = ownCS.getCoords(gridPos, addGrid);
-//            // сработает примерно в половине случаев
-//            if (ThreadLocalRandom.current().nextBoolean())
-//                addPoint(pos, Point.PointSet.FIRST_SET);
-//            else
-//                addPoint(pos, Point.PointSet.SECOND_SET);
-//        }
-//    }
-
     /**
      * Рисование сетки
      *
@@ -323,7 +279,6 @@ public class Task {
      * @param windowCS СК окна
      * @return вещественный вектор положения в СК задачи
      */
-    @JsonIgnore
     public Vector2d getRealPos(int x, int y, CoordinateSystem2i windowCS) {
         return ownCS.getCoords(x, y, windowCS);
     }
