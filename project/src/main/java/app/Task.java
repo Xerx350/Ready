@@ -111,16 +111,11 @@ public class Task {
      * @param mouseButton кнопка мыши
      */
     public void click(Vector2i pos, MouseButton mouseButton) {
-//        if (lastWindowCS == null) return;
-//        // получаем положение на экране
-//        Vector2d taskPos = ownCS.getCoords(pos, lastWindowCS);
-//        // если левая кнопка мыши, добавляем в первое множество
-//        if (mouseButton.equals(MouseButton.PRIMARY)) {
-//            addPoint(taskPos, Point.PointSet.FIRST_SET);
-//            // если правая, то во второе
-//        } else if (mouseButton.equals(MouseButton.SECONDARY)) {
-//            addPoint(taskPos, Point.PointSet.SECOND_SET);
-//        }
+        if (lastWindowCS == null) return;
+        // получаем положение на экране
+        Vector2d taskPos = ownCS.getCoords(pos, lastWindowCS);
+        // если левая кнопка мыши, добавляем в первое множество
+        addPoint(taskPos);
     }
 
     /**
@@ -131,19 +126,17 @@ public class Task {
         circles.clear();
     }
 
-//    /**
-//     * Добавить точку
-//     *
-//     * @param pos      положение
-//     * @param pointSet множество
-//     */
-//    public void addPoint(Vector2d pos, Point.PointSet pointSet) {
-//        solved = false;
-//        Point newPoint = new Point(pos, pointSet);
-//        points.add(newPoint);
-//        // Добавляем в лог запись информации
-//        PanelLog.info("точка " + newPoint + " добавлена в " + newPoint.getSetName());
-//    }
+    /**
+     * Добавить точку
+     *
+     * @param pos      положение
+     */
+    public void addPoint(Vector2d pos) {
+        Point newPoint = new Point(pos);
+        points.add(newPoint);
+        // Добавляем в лог запись информации
+        PanelLog.info("точка " + newPoint + " добавлена");
+    }
 
     /**
      * Рисование сетки
