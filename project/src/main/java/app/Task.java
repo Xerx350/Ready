@@ -60,11 +60,6 @@ public class Task {
     protected CoordinateSystem2i lastWindowCS;
 
     /**
-     * Флаг, решена ли задача
-     */
-    private boolean solved;
-
-    /**
      * Порядок разделителя сетки, т.е. раз в сколько отсечек
      * будет нарисована увеличенная
      */
@@ -83,6 +78,15 @@ public class Task {
         this.ownCS = ownCS;
         this.points = points;
         this.circles = new ArrayList<>();
+
+        // вручную
+        points.add(new Point(new Vector2d(0,0)));
+        points.add(new Point(new Vector2d(3,0)));
+        points.add(new Point(new Vector2d(-1.25, -1.25)));
+
+        circles.add(new Circle(new Vector2d(0, 0), 5));
+        circles.add(new Circle(new Vector2d(3, 0), 2));
+        circles.add(new Circle(new Vector2d(-1.25, -1.25), 7.37));
     }
 
     /**
@@ -123,57 +127,8 @@ public class Task {
      * Очистить задачу
      */
     public void clear() {
-//        points.clear();
-        solved = false;
-    }
-
-    /**
-     * Решить задачу
-     */
-    public void solve() {
-//        // очищаем списки
-//        crossed.clear();
-//        single.clear();
-//
-//        // перебираем пары точек
-//        for (int i = 0; i < points.size(); i++) {
-//            for (int j = i + 1; j < points.size(); j++) {
-//                // сохраняем точки
-//                Point a = points.get(i);
-//                Point b = points.get(j);
-//                // если точки совпадают по положению
-//                if (a.pos.equals(b.pos) && !a.pointSet.equals(b.pointSet)) {
-//                    if (!crossed.contains(a)){
-//                        crossed.add(a);
-//                        crossed.add(b);
-//                    }
-//                }
-//            }
-//        }
-//
-//        /// добавляем вс
-//        for (Point point : points)
-//            if (!crossed.contains(point))
-//                single.add(point);
-
-        // задача решена
-        solved = true;
-    }
-
-    /**
-     * Отмена решения задачи
-     */
-    public void cancel() {
-        solved = false;
-    }
-
-    /**
-     * проверка, решена ли задача
-     *
-     * @return флаг
-     */
-    public boolean isSolved() {
-        return solved;
+        points.clear();
+        circles.clear();
     }
 
 //    /**
@@ -238,21 +193,31 @@ public class Task {
         canvas.save();
         // создаём перо
         try (var paint = new Paint()) {
-//            for (Point p : points) {
-//                if (!solved) {
-//                    paint.setColor(p.getColor());
-//                } else {
-//                    if (crossed.contains(p))
-//                        paint.setColor(CROSSED_COLOR);
-//                    else
-//                        paint.setColor(SUBTRACTED_COLOR);
-//                }
-//                // y-координату разворачиваем, потому что у СК окна ось y направлена вниз,
-//                // а в классическом представлении - вверх
-//                Vector2i windowPos = windowCS.getCoords(p.pos.x, p.pos.y, ownCS);
-//                // рисуем точку
-//                canvas.drawRect(Rect.makeXYWH(windowPos.x - POINT_SIZE, windowPos.y - POINT_SIZE, POINT_SIZE * 2, POINT_SIZE * 2), paint);
-//            }
+            for (Point p : points) {
+                paint.setColor(p.getColor());
+                // y-координату разворачиваем, потому что у СК окна ось y направлена вниз,
+                // а в классическом представлении - вверх
+                Vector2i windowPos = windowCS.getCoords(p.pos.x, p.pos.y, ownCS);
+                // рисуем точку
+                canvas.drawRect(Rect.makeXYWH(windowPos.x - POINT_SIZE, windowPos.y - POINT_SIZE, POINT_SIZE * 2, POINT_SIZE * 2), paint);
+            }
+            for (Circle c : circles) {
+                paint.setColor(c.getColor());
+                float[] drawing = c.paint();
+                float[] windowPosPoints = new float[drawing.length];
+                for (int i = 0; i < drawing.length; i += 4) {
+                    // y-координату разворачиваем, потому что у СК окна ось y направлена вниз,
+                    // а в классическом представлении - вверх
+                    Vector2i windowPos = windowCS.getCoords(drawing[i], drawing[i + 1], ownCS);
+                    windowPosPoints[i] = (float) windowPos.x;
+                    windowPosPoints[i + 1] = (float) windowPos.y;
+                    windowPos = windowCS.getCoords(drawing[i + 2], drawing[i + 3], ownCS);
+                    windowPosPoints[i + 2] = (float) windowPos.x;
+                    windowPosPoints[i + 3] = (float) windowPos.y;
+                }
+                // рисуем линии
+                canvas.drawLines(windowPosPoints, paint);
+            }
         }
         canvas.restore();
     }

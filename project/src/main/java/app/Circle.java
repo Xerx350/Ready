@@ -47,12 +47,17 @@ public class Circle {
     public float[] paint() {
         int loopCnt = 40;
         // создаём массив координат опорных точек
-        float[] points = new float[loopCnt * 2];
-        for (int i = 0; i < points.length; ++i) {
-            // x координата точки
+        float[] points = new float[loopCnt * 4];
+        for (int i = 0; i < loopCnt; ++i) {
+            // x координата первой точки
             points[i * 4] = (float) (pos.x + r * Math.cos(Math.PI / 20 * i));
-            // y координата точки
+            // y координата первой точки
             points[i * 4 + 1] = (float) (pos.y + r * Math.sin(Math.PI / 20 * i));
+
+            // x координата второй точки
+            points[i * 4 + 2] = (float) (pos.x + r * Math.cos(Math.PI / 20 * (i + 1)));
+            // y координата точки
+            points[i * 4 + 3] = (float) (pos.y + r * Math.sin(Math.PI / 20 * (i + 1)));
         }
         return points;
     }
