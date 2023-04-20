@@ -50,11 +50,11 @@ public class PanelHelp extends GridPanel {
             int gridX, int gridY, int colspan, int rowspan
     ) {
         super(window, drawBG, color, padding, gridWidth, gridHeight, gridX, gridY, colspan, rowspan);
-        shortcuts.add(new Shortcut("R", true, "Отменить решение"));
-        shortcuts.add(new Shortcut("S", true, "Решить"));
-        shortcuts.add(new Shortcut("ctrl+H", true, "Свернуть"));
-        shortcuts.add(new Shortcut("ctrl+1", true, "Во весь экран/Обычный размер"));
-        shortcuts.add(new Shortcut("ctrl+2", true, "Полупрозрачное окно/обычное"));
+        shortcuts.add(new Shortcut("R", false, "Отменить решение"));
+        shortcuts.add(new Shortcut("S", false, "Решить"));
+        shortcuts.add(new Shortcut("H", true, "Свернуть"));
+        shortcuts.add(new Shortcut("1", true, "Во весь экран/Обычный размер"));
+        shortcuts.add(new Shortcut("2", true, "Полупрозрачное окно/обычное"));
         shortcuts.add(new Shortcut("Esc", false, "Закрыть окно"));
         shortcuts.add(new Shortcut("ЛКМ/ПКМ", false, "Добавить точку"));
     }
