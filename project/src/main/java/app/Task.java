@@ -10,6 +10,7 @@ import misc.Vector2i;
 import panels.PanelLog;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static app.Colors.*;
@@ -66,6 +67,11 @@ public class Task {
     private static final int DELIMITER_ORDER = 10;
 
     /**
+     * Флаг, решена ли задача
+     */
+    private boolean solved;
+
+    /**
      * Задача
      *
      * @param ownCS  СК задачи
@@ -78,15 +84,6 @@ public class Task {
         this.ownCS = ownCS;
         this.points = points;
         this.circles = new ArrayList<>();
-
-        // вручную
-        points.add(new Point(new Vector2d(0,0)));
-        points.add(new Point(new Vector2d(3,0)));
-        points.add(new Point(new Vector2d(-1.25, -1.25)));
-
-        circles.add(new Circle(new Vector2d(0, 0), 5));
-        circles.add(new Circle(new Vector2d(3, 0), 2));
-        circles.add(new Circle(new Vector2d(-1.25, -1.25), 7.37));
     }
 
     /**
@@ -116,6 +113,23 @@ public class Task {
         Vector2d taskPos = ownCS.getCoords(pos, lastWindowCS);
         // если левая кнопка мыши, добавляем в первое множество
         addPoint(taskPos);
+    }
+
+    /**
+     * проверка, решена ли задача
+     *
+     * @return флаг
+     */
+    public boolean isSolved() {
+        return solved;
+    }
+
+    /**
+     * Отмена решения задачи
+     */
+    public void cancel() {
+        circles.clear();
+        solved = false;
     }
 
     /**
@@ -216,6 +230,46 @@ public class Task {
     }
 
     /**
+     * Решение задачи
+     */
+    public void solve() {
+        circles.clear();
+
+        int n = points.size();
+        double[][] distance = new double[n][n];
+        for (int i = 0; i < n; ++i) {
+            for (int j = i + 1; j < n; ++j) {
+                distance[i][j] = Vector2d.subtract(points.get(i).pos, points.get(j).pos).length();
+                distance[j][i] = distance[i][j];
+            }
+        }
+        for (int i = 0; i < n; ++i) {
+            Arrays.sort(distance[i]);
+        }
+        int c1 = 0, c2 = 1;
+        int centerElem = (n / 2) - 1 + n % 2;
+        if (distance[c1][centerElem] > distance[c2][centerElem]) {
+            int t = c1;
+            c1 = c2;
+            c2 = t;
+        }
+        for (int i = 2; i < n; ++i) {
+            if (distance[c1][centerElem] > distance[i][centerElem]) {
+                c2 = c1;
+                c1 = i;
+            } else {
+                if (distance[c2][centerElem] > distance[i][centerElem]) {
+                    c2 = i;
+                }
+            }
+        }
+        circles.add(new Circle(points.get(c1).pos, distance[c1][centerElem]));
+        circles.add(new Circle(points.get(c2).pos, distance[c2][centerElem]));
+
+        solved = true;
+    }
+
+    /**
      * Масштабирование области просмотра задачи
      *
      * @param delta  прокрутка колеса
@@ -227,6 +281,14 @@ public class Task {
         Vector2d realCenter = ownCS.getCoords(center, lastWindowCS);
         // выполняем масштабирование
         ownCS.scale(1 + delta * WHEEL_SENSITIVE, realCenter);
+    }
+
+    /**
+     * Получить ответ решения
+     */
+    public String getAnswer() {
+        return  "окружность №1:" + circles.get(0).toString() +
+                " окружность №2:" + circles.get(1).toString();
     }
 
     /**

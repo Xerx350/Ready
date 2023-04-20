@@ -198,8 +198,6 @@ public class Application implements Consumer<Event> {
                     switch (eventKey.getKey()) {
                         case W -> window.close();
                         case H -> window.minimize();
-                        case S -> PanelRendering.save();
-                        case O -> PanelRendering.load();
                         case DIGIT1 -> {
                             if (maximizedWindow)
                                 window.restore();
@@ -224,6 +222,14 @@ public class Application implements Consumer<Event> {
                             }
                         }
                         case TAB -> InputFactory.nextTab();
+                        case S -> {
+                            PanelRendering.task.solve();
+                            String s = "Задача решена\n" +
+                                    PanelRendering.task.getAnswer();
+                            PanelInfo.show(s + "\n\nНажмите Esc, чтобы вернуться");
+                            PanelLog.success(s);
+                        }
+                        case R -> PanelRendering.task.cancel();
                     }
             }
         }
