@@ -247,7 +247,7 @@ public class Task {
             Arrays.sort(distance[i]);
         }
         int c1 = 0, c2 = 1;
-        int centerElem = (n / 2) - 1 + n % 2;
+        int centerElem = (n / 2) + n % 2;
         if (distance[c1][centerElem] > distance[c2][centerElem]) {
             int t = c1;
             c1 = c2;
